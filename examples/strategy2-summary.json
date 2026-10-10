@@ -1,0 +1,177 @@
+{
+  "engine": "research-v7",
+  "version": 2,
+  "code_hash": "5756c8dc497572345e4793f44e1180bbe213c340308b68147fd9879c85a508ca",
+  "dataset_fingerprint": "aff713cac2ee3da530fe6a53e74b6edcc8f65c5f3d6c8d60c1cfb6fd9811cd13",
+  "spec": {
+    "market": "BTC",
+    "timeframe": "1h",
+    "directions": "long_short",
+    "hypothesis": "Two-horizon directional momentum may capture BTC trends; no profitability assumed",
+    "entry_rules": "Long if close-close[5]>0 AND close-close[10]>0; short if both <0",
+    "exit_rules": "Exit long if either momentum <0; exit short if either >0; original optional stop disabled",
+    "failure_conditions": [
+      "Whipsaw in ranges",
+      "No hard stop may produce large drawdown",
+      "Inverse market transfer and execution differences"
+    ],
+    "evidence_quotes": [
+      "fast_period = input(title=\"Fast Period\", defval=5)",
+      "slow_period = input(title=\"Slow Period\", defval=10)",
+      "use_sl = input(title=\"Use Stop-Loss\", defval=false)"
+    ],
+    "warmup_bars": 50,
+    "signal_exit": true,
+    "risk": {
+      "stop_atr": null,
+      "take_atr": null,
+      "max_hold_bars": null
+    }
+  },
+  "data": {
+    "bar_count": 54029,
+    "duplicates_removed": 0,
+    "gaps": [],
+    "start": 1597129200000,
+    "end": 1791630000000,
+    "stale_days": 0.2,
+    "data_hash": "c85165533b9a81a2843ed8b8965196ef75301c102aa9238b971d858499f73e4f",
+    "funding_hash": "81a35f9b199b9ef50093092456ea9f7f7e9171563518cc291dee2c5be14b8d9e"
+  },
+  "split": {
+    "train_end": 1704067200000,
+    "validation_end": 1735689600000
+  },
+  "cost_model": {
+    "fee_per_side": 0.001,
+    "entry_slip": 0.0004,
+    "exit_slip": 0.0006,
+    "spread_roundtrip": 0.0002,
+    "position_fraction": 0.3,
+    "contract_type": "inverse",
+    "return_currency": "BTC",
+    "funding_included": true
+  },
+  "funding_included": true,
+  "qualified": false,
+  "paper_ready": false,
+  "thresholds": {
+    "min_return_pct": 50.0,
+    "min_trades": 30,
+    "min_pf": 1.1,
+    "min_sharpe": 0.5,
+    "max_dd_pct": 15.0,
+    "policy": "net_btc_cumulative_50_v1"
+  },
+  "limitations": [
+    "No order-book or intrabar sequence",
+    "Funding timestamps align to candle open; bar-open price proxies mark price",
+    "Source rules require human review",
+    "Selection across many candidates remains a multiple-testing risk",
+    "2025-2026 is reused historical evaluation, not a fresh holdout; forward paper validation is required"
+  ],
+  "status": "research_only",
+  "return_currency": "BTC",
+  "splits": {
+    "train": {
+      "return_pct": -98.0278,
+      "drawdown_pct": 98.0305,
+      "win_rate": 19.37,
+      "profit_factor": 0.4966,
+      "trade_count": 4088,
+      "sharpe_ratio": -6.9879,
+      "annualized_return_pct": -68.6444,
+      "fees": 2989.3025,
+      "funding_paid": 42.2583,
+      "ambiguous_bars": 0,
+      "return_currency": "BTC",
+      "usd_portfolio_return_pct": -92.6997
+    },
+    "validation": {
+      "return_pct": -78.443,
+      "drawdown_pct": 78.7034,
+      "win_rate": 18.11,
+      "profit_factor": 0.4078,
+      "trade_count": 1491,
+      "sharpe_ratio": -10.7587,
+      "annualized_return_pct": -78.3562,
+      "fees": 2421.9758,
+      "funding_paid": 16.1037,
+      "ambiguous_bars": 0,
+      "return_currency": "BTC",
+      "usd_portfolio_return_pct": -52.396
+    },
+    "test": {
+      "return_pct": -88.7498,
+      "drawdown_pct": 88.8033,
+      "win_rate": 17.59,
+      "profit_factor": 0.3846,
+      "trade_count": 2593,
+      "sharpe_ratio": -11.1509,
+      "annualized_return_pct": -70.8192,
+      "fees": 3047.1204,
+      "funding_paid": -0.3044,
+      "ambiguous_bars": 0,
+      "return_currency": "BTC",
+      "usd_portfolio_return_pct": -90.0338
+    },
+    "cost_stress": {
+      "return_pct": -92.7841,
+      "drawdown_pct": 92.7925,
+      "win_rate": 14.65,
+      "profit_factor": 0.2752,
+      "trade_count": 2007,
+      "sharpe_ratio": -12.8996,
+      "annualized_return_pct": -77.2821,
+      "fees": 3206.6022,
+      "funding_paid": 0.8753,
+      "ambiguous_bars": 0,
+      "return_currency": "BTC",
+      "usd_portfolio_return_pct": -93.6077
+    }
+  },
+  "test_folds": [
+    {
+      "return_pct": -54.4833,
+      "drawdown_pct": 54.6995,
+      "win_rate": 18.23,
+      "profit_factor": 0.4058,
+      "trade_count": 861,
+      "sharpe_ratio": -10.7957,
+      "annualized_return_pct": -73.5872,
+      "fees": 1908.3993,
+      "funding_paid": 1.4182,
+      "ambiguous_bars": 0,
+      "return_currency": "BTC",
+      "usd_portfolio_return_pct": -44.0914
+    },
+    {
+      "return_pct": -52.9657,
+      "drawdown_pct": 53.1599,
+      "win_rate": 18.41,
+      "profit_factor": 0.3697,
+      "trade_count": 858,
+      "sharpe_ratio": -9.9856,
+      "annualized_return_pct": -72.0805,
+      "fees": 1828.496,
+      "funding_paid": -2.4968,
+      "ambiguous_bars": 0,
+      "return_currency": "BTC",
+      "usd_portfolio_return_pct": -72.4651
+    },
+    {
+      "return_pct": -58.5558,
+      "drawdown_pct": 58.5565,
+      "win_rate": 16.0,
+      "profit_factor": 0.2971,
+      "trade_count": 875,
+      "sharpe_ratio": -13.3843,
+      "annualized_return_pct": -77.4596,
+      "fees": 1792.927,
+      "funding_paid": -3.5197,
+      "ambiguous_bars": 0,
+      "return_currency": "BTC",
+      "usd_portfolio_return_pct": -48.942
+    }
+  ]
+}

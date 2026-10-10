@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "computed_qualified": false,
+  "reported_qualified": false,
+  "consistent": true,
+  "failures": [
+    "validation.return_pct: gate failed",
+    "validation.profit_factor: gate failed",
+    "validation.sharpe_ratio: gate failed",
+    "validation.drawdown_pct: gate failed",
+    "test.return_pct: gate failed",
+    "test.profit_factor: gate failed",
+    "test.sharpe_ratio: gate failed",
+    "test.drawdown_pct: gate failed",
+    "test_folds: fewer than two positive",
+    "cost_stress: require positive finite return"
+  ],
+  "scope": "Metric audit only; verify source, hashes, data and cost model separately"
+}

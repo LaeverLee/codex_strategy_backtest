@@ -1,0 +1,3 @@
+numpy
+pandas
+# Existing engine snapshot has no pinned lockfile; record installed versions before deployment.

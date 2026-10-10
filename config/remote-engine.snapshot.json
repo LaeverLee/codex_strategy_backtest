@@ -1,0 +1,15 @@
+{
+  "verified_date": "2026-10-11",
+  "sha256": {
+    "quality_policy.py": "f163be8ad01360a9b5222cc4b7e48fd80a6fedd5b4871a34b0fda19cc46f0dee",
+    "lab_records.py": "c22e322a268d0527cef6cbb58b95a1b0a92d249fdac4a853410686897a35de65",
+    "strategy_quality.py": "7da3d10b49eff6908de2ab9200b8a866fa1450a633866aed30ca512765f8b2c2",
+    "backtest_v6.py": "cd5f444fc63b80d97da05740714fec66296102597c98632331a2614547a7d9ab"
+  },
+  "local_matches": {
+    "quality_policy.py": true,
+    "lab_records.py": false,
+    "strategy_quality.py": true,
+    "backtest_v6.py": true
+  }
+}

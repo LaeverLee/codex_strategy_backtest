@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.local.json
+connection.json
+private/
+state/
+*.sqlite*
+*.pem
+*.key
+*.csv

@@ -1,0 +1,14 @@
+{
+  "snapshot_date": "2026-10-11",
+  "origin": "codex_strategy_hunt handoff engine at 290c964",
+  "deployed": false,
+  "sha256": {
+    "backtest_v6.py": "cd5f444fc63b80d97da05740714fec66296102597c98632331a2614547a7d9ab",
+    "candidate_validation.py": "f79966fbe04559d347be157e10661247f84d85ecc2947664d113caae3fa9a39f",
+    "lab_records.py": "9d979691b41bc4f9b6990f5f12a875ed6ace56853a3734c6a5df2e51e60ff980",
+    "lab_runtime.py": "a3ee8b5f3860797918cd206963b667e32e0385c81aac8760dae347031db05da7",
+    "quality_policy.py": "f163be8ad01360a9b5222cc4b7e48fd80a6fedd5b4871a34b0fda19cc46f0dee",
+    "refresh_data_v6.py": "d7da1d320f35e3caf26d8bac3d63b88a7fd42b04ad42a2aad21e9e705f3e3c69",
+    "strategy_quality.py": "7da3d10b49eff6908de2ab9200b8a866fa1450a633866aed30ca512765f8b2c2"
+  }
+}
