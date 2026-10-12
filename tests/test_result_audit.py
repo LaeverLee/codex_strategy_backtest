@@ -9,12 +9,13 @@ verify = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(verify)
 
 def passing():
-    metrics = {'return_pct': 50., 'trade_count': 30, 'profit_factor': 1.1,
+    metrics = {'return_currency': 'BTC', 'return_pct': 50., 'trade_count': 30, 'profit_factor': 1.1,
                'sharpe_ratio': .5, 'drawdown_pct': 15.}
     return {'version': 1, 'return_currency': 'BTC', 'qualified': True,
-            'validation': {'metrics': dict(metrics)}, 'test': {'metrics': dict(metrics)},
-            'test_folds': [{'metrics': {'return_pct': v}} for v in [1, 1, -1]],
-            'cost_stress': {'metrics': {'return_pct': .001}}}
+            'contract': 'Binance COIN-M BTCUSD_PERP', 'cost_model': {'contract_type':'inverse','return_currency':'BTC'},
+            'train': {'metrics': dict(metrics)}, 'validation': {'metrics': dict(metrics)}, 'test': {'metrics': dict(metrics)},
+            'test_folds': [{'metrics': dict(metrics, return_pct=v)} for v in [1, 1, -1]],
+            'cost_stress': {'metrics': dict(metrics, return_pct=.001)}}
 
 class ResultAuditTests(unittest.TestCase):
     def test_exact_boundaries_pass(self):

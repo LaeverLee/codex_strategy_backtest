@@ -9,25 +9,45 @@ LIMITS = {'return_pct': 50., 'trade_count': 30, 'profit_factor': 1.1,
 
 def audit(result):
     failures = []
-    for split in ['validation', 'test']:
-        metrics = result.get(split, {}).get('metrics', {})
+    try:
+        json.dumps(result, allow_nan=False)
+    except (ValueError, TypeError):
+        failures.append('result: invalid/nonfinite JSON')
+    if (result.get('contract') != 'Binance COIN-M BTCUSD_PERP'
+            or result.get('return_currency') != 'BTC'
+            or result.get('cost_model', {}).get('contract_type') != 'inverse'
+            or result.get('cost_model', {}).get('return_currency') != 'BTC'
+            or result.get('data', {}).get('contract_type', 'inverse') != 'inverse'
+            or result.get('data', {}).get('return_currency', 'BTC') != 'BTC'):
+        failures.append('contract/currency: require inverse BTCUSD and BTC')
+    folds = result.get('test_folds', [])
+    if not isinstance(folds, list) or len(folds) != 3:
+        failures.append('test_folds: require three results')
+        folds = []
+    segments = [(k, result.get(k, {})) for k in ['train', 'validation', 'test', 'cost_stress']]
+    segments += [(f'fold_{i}', f) for i, f in enumerate(folds)]
+    for split, segment in segments:
+        metrics = segment.get('metrics', {}) if isinstance(segment, dict) else {}
+        if metrics.get('return_currency') != 'BTC':
+            failures.append(f'{split}: require BTC')
         for key, limit in LIMITS.items():
             value = metrics.get(key)
             if type(value) not in (int, float) or not math.isfinite(value):
                 failures.append(f'{split}.{key}: missing/nonfinite')
-            elif (value > limit if key == 'drawdown_pct' else value < limit):
+                continue
+            if (key == 'trade_count' and (type(value) is not int or value < 0)
+                    or key == 'drawdown_pct' and not 0 <= value <= 100
+                    or key == 'profit_factor' and value < 0
+                    or key == 'return_pct' and value < -100):
+                failures.append(f'{split}.{key}: invalid range/type')
+            if split in ['validation', 'test'] and (value > limit if key == 'drawdown_pct' else value < limit):
                 failures.append(f'{split}.{key}: gate failed')
-    folds = result.get('test_folds', [])
-    values = [f.get('metrics', {}).get('return_pct') for f in folds]
-    if len(values) != 3 or any(type(v) not in (int, float) or not math.isfinite(v) for v in values):
-        failures.append('test_folds: require three finite results')
-    elif sum(v > 0 for v in values) < 2:
-        failures.append('test_folds: fewer than two positive')
+    values = [f.get('metrics', {}).get('return_pct') for f in folds if isinstance(f, dict)]
+    if len(values) != 3 or any(type(v) not in (int, float) or not math.isfinite(v) for v in values) or sum(v > 0 for v in values) < 2:
+        failures.append('test_folds: require at least two positive finite returns')
     stress = result.get('cost_stress', {}).get('metrics', {}).get('return_pct')
     if type(stress) not in (int, float) or not math.isfinite(stress) or stress <= 0:
         failures.append('cost_stress: require positive finite return')
-    if result.get('return_currency') != 'BTC':
-        failures.append('return_currency: must be BTC')
     if result.get('status') == 'source_review_failed':
         failures.append('source review failed')
     qualified = not failures
