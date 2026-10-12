@@ -48,3 +48,15 @@ class ResultAuditTests(unittest.TestCase):
         self.assertFalse(verify.audit(result)['computed_qualified'])
 
 if __name__=='__main__':unittest.main()
+
+class CompleteAuditTests(unittest.TestCase):
+    def test_all_segments_have_independent_currency_and_numeric_validation(self):
+        for index in range(7):
+            for key,value in [('return_currency','USD'),('profit_factor',float('inf')),('trade_count',30.),('drawdown_pct',-1),('return_pct',True)]:
+                result=passing();segments=[result[k] for k in ['train','validation','test','cost_stress']]+result['test_folds']
+                segments[index]['metrics'][key]=value
+                with self.subTest(index=index,key=key): self.assertFalse(verify.audit(result)['computed_qualified'])
+    def test_cost_and_dataset_contract_are_validated(self):
+        for container,key,value in [('cost_model','contract_type','linear'),('cost_model','return_currency','USD'),('data','contract_type','linear')]:
+            result=passing();result.setdefault(container,{})[key]=value
+            self.assertFalse(verify.audit(result)['computed_qualified'])
