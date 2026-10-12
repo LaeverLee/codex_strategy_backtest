@@ -6,6 +6,45 @@ import re
 import shlex
 import subprocess
 
+SEARCH_JOB = '52d4bf14-f93e-4f00-8e67-fc770aef6929'
+BACKTEST_JOB = 'a8f06958-e766-4780-b4bf-a845977100b7'
+
+
+def validate_write_preflight(evidence, action):
+    jobs = evidence.get('jobs', {})
+    for identifier in [SEARCH_JOB, BACKTEST_JOB]:
+        job = jobs.get(identifier)
+        if not isinstance(job, dict) or type(job.get('enabled')) is not bool:
+            raise RuntimeError('Schedule ownership evidence missing')
+        if job.get('delivery', {}).get('mode') != 'none' or job.get('delivery', {}).get('to'):
+            raise RuntimeError('Automatic announce must remain disabled')
+    if jobs[SEARCH_JOB]['enabled']:
+        raise RuntimeError('Legacy search must remain disabled')
+    if action == 'run' and jobs[BACKTEST_JOB]['enabled']:
+        raise RuntimeError('Legacy backtest still owns schedule; explicit takeover required')
+    if evidence.get('fixture_present') is not False:
+        raise RuntimeError('Fixture or missing formal-ledger isolation evidence')
+
+
+def write_preflight_code():
+    # Read-only check runs in the selected Ready pod immediately before writes.
+    return """import pathlib,json,sys,sqlite3
+r=pathlib.Path(sys.argv[1]); jobs={}; fixture=False
+c=sqlite3.connect('file:/home/node/.openclaw/state/openclaw.sqlite?mode=ro',uri=True)
+for identifier in ['52d4bf14-f93e-4f00-8e67-fc770aef6929','a8f06958-e766-4780-b4bf-a845977100b7']:
+ row=c.execute('select job_json from cron_jobs where job_id=?',(identifier,)).fetchone()
+ if row:
+  j=json.loads(row[0]); jobs[identifier]={'enabled':j.get('enabled'),'delivery':j.get('delivery',{})}
+paths=[]
+for folder in ['Strategy','Research_Qualified','Research_Rejected','research_results']:
+ paths.extend((r/'pytest'/folder).glob('*.json'))
+paths.extend((r/'goldhuntv2/research').glob('*.run.json'))
+for p in paths:
+ m=json.loads(p.read_text())
+ if m.get('source_url')=='integration-fixture-only' or m.get('fixture') or any(a.get('url')=='integration-fixture-only' or a.get('fixture') for a in m.get('attempts',[])):
+  fixture=True
+print(json.dumps({'jobs':jobs,'fixture_present':fixture}))"""
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('action', choices=['health', 'inspect', 'result', 'run', 'sync'])
@@ -72,6 +111,9 @@ print(json.dumps({'queue':items,'jobs':jobs,'engine_hashes':{p.name:hashlib.sha2
         print(remote(base+['python3', '-c', code, root]))
     else:
         mode = {'run': 'backtest'}.get(args.action, args.action)
+        if args.action in {'run', 'sync'}:
+            evidence = json.loads(remote(base+['python3', '-c', write_preflight_code(), root]))
+            validate_write_preflight(evidence, args.action)
         raw = remote(base+['python3', root+'/lab_runtime.py', mode], timeout=900 if mode == 'backtest' else 90)
         # Runtime success is not proof of a completed candidate; inspect/result/DB after execution.
         print(raw if mode == 'health' else json.dumps({'command_finished': True, 'mode': mode,
